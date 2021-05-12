@@ -77,7 +77,7 @@ class Realsense(DCamera):
         depth_image = np.asanyarray(aligned_depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
 
-        return color_image, depth_image, timestamp
+        return color_image, depth_image * self.depth_scale, timestamp
 
     def get_frame(self):
         color_images = []
@@ -93,9 +93,12 @@ class Realsense(DCamera):
         timestamp = np.mean(np.array(timestamps), axis=0)
         flag = np.zeros_like(depth_image).astype(np.bool)
         for d_img in depth_images:
-            flag = flag | (d_img < 10e-3)
+            flag = flag | (d_img < self.depth_scale)
         depth_image[flag] = 0
         return color_image, depth_image, timestamp
+
+    def open(self):
+        self.pipeline.start(self.config)
 
     def close(self):
         self.pipeline.stop()
