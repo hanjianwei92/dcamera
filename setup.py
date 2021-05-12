@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="dcamera",
-    version="0.2",
+    version="0.3",
     author="JarintotionDin",
     url="github.com",
     description="dcamera interface",
