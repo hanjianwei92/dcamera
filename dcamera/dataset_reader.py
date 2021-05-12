@@ -14,7 +14,7 @@ class DatasetReader(DCamera):
             self.depth_scale = 0.001
         self.dataset_root = dataset_root
         self.image_id = image_id
-        self.clk = np.load(os.path.join(self.dataset_root, "clb_k", str(self.image_id) + ".npy"))
+        self.K = np.load(os.path.join(self.dataset_root, "clb_k", str(self.image_id) + ".npy"))
 
     def open(self):
         pass
