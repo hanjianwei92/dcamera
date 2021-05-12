@@ -9,9 +9,9 @@ class DatasetReader(DCamera):
     def __init__(self, dataset_root: str, image_id):
         super(DatasetReader, self).__init__()
         if "l515" in dataset_root:
-            self.scale = 0.00025
+            self.depth_scale = 0.00025
         else:
-            self.scale = 0.001
+            self.depth_scale = 0.001
         self.dataset_root = dataset_root
         self.image_id = image_id
         self.clk = np.load(os.path.join(self.dataset_root, "clb_k", str(self.image_id) + ".npy"))
