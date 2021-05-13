@@ -25,4 +25,4 @@ class DatasetReader(DCamera):
     def get_frame(self):
         color_image = cv2.imread(os.path.join(self.dataset_root, "imgs_rgb", str(self.image_id) + ".jpg"))
         depth_image = np.load(os.path.join(self.dataset_root, "imgs_depth", str(self.image_id) + ".npy"))
-        return color_image, depth_image, time.time()
+        return color_image, depth_image * self.depth_scale, time.time()
