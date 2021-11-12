@@ -6,7 +6,7 @@ import time
 
 
 class DatasetReader(DCamera):
-    def __init__(self, dataset_root: str, start_image_id):
+    def __init__(self, dataset_root: str, start_image_id=0):
         super(DatasetReader, self).__init__()
         if "l515" in dataset_root:
             self.depth_scale = 0.00025
