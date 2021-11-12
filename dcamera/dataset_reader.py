@@ -29,7 +29,7 @@ class DatasetReader(DCamera):
         depth_path = os.path.join(self.dataset_root, "imgs_depth", str(self.image_id) + ".npy")
         if (not os.path.exists(img_path)) or (not os.path.exists(depth_path)):
             if self.cycle_read:
-                self.image_id = self.start_image_ids
+                self.image_id = self.start_image_id
             else:
                 self.image_id -= 1
             img_path = os.path.join(self.dataset_root, "imgs_rgb", str(self.image_id) + ".jpg")
