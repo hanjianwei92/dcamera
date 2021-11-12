@@ -10,7 +10,7 @@ if __name__ == "__main__":
     while True:
         rgb, depth, t = rs.get_frame()
         bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth, alpha=0.3), cv2.COLORMAP_JET)
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(1000 * depth, alpha=0.3), cv2.COLORMAP_JET)
         images = np.hstack((bgr, depth_colormap))
         cv2.namedWindow('RealSense_depth', cv2.WINDOW_AUTOSIZE)
         cv2.imshow('RealSense_depth', images)

@@ -10,7 +10,7 @@ class DatasetReader(DCamera):
         super(DatasetReader, self).__init__()
         if "l515" in dataset_root:
             self.depth_scale = 0.00025
-        else:
+        elif "d435" in dataset_root:
             self.depth_scale = 0.001
         self.dataset_root = dataset_root
         self.image_id = image_id
