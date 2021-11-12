@@ -27,11 +27,13 @@ class DatasetReader(DCamera):
     def get_frame(self):
         img_path = os.path.join(self.dataset_root, "imgs_rgb", str(self.image_id) + ".jpg")
         depth_path = os.path.join(self.dataset_root, "imgs_depth", str(self.image_id) + ".npy")
-        if not os.path.exists(img_path) or not os.path.exists(depth_path):
+        if (not os.path.exists(img_path)) or (not os.path.exists(depth_path)):
             if self.cycle_read:
-                self.image_id = self.start_image_id
+                self.image_id = self.start_image_ids
             else:
                 self.image_id -= 1
+            img_path = os.path.join(self.dataset_root, "imgs_rgb", str(self.image_id) + ".jpg")
+            depth_path = os.path.join(self.dataset_root, "imgs_depth", str(self.image_id) + ".npy")
         color_image = cv2.imread(img_path)
         depth_image = np.load(depth_path)
         self.image_id += 1
