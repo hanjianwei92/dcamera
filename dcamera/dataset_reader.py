@@ -6,7 +6,7 @@ import time
 
 
 class DatasetReader(DCamera):
-    def __init__(self, dataset_root: str, start_image_id=0, cycle_read=True):
+    def __init__(self, dataset_root: str, start_image_id=0, cycle_read=True, step=1):
         super(DatasetReader, self).__init__()
         if "l515" in dataset_root:
             self.depth_scale = 0.00025
@@ -17,6 +17,7 @@ class DatasetReader(DCamera):
         self.start_image_id = start_image_id
         self.K = np.load(os.path.join(self.dataset_root, "clb_k", str(self.image_id) + ".npy"))
         self.cycle_read = cycle_read
+        self.step = step
 
     def open(self):
         pass
@@ -31,10 +32,10 @@ class DatasetReader(DCamera):
             if self.cycle_read:
                 self.image_id = self.start_image_id
             else:
-                self.image_id -= 1
+                self.image_id -= self.step
             img_path = os.path.join(self.dataset_root, "imgs_rgb", str(self.image_id) + ".jpg")
             depth_path = os.path.join(self.dataset_root, "imgs_depth", str(self.image_id) + ".npy")
         color_image = cv2.imread(img_path)
         depth_image = np.load(depth_path)
-        self.image_id += 1
+        self.image_id += self.step
         return color_image, depth_image * self.depth_scale, time.time()
