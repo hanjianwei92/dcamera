@@ -26,8 +26,11 @@ class Realsense(DCamera):
         self.fps = fps
         # Start streaming
         self.config = rs.config()
+<<<<<<< HEAD
         self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, fps)
         self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, fps)
+=======
+>>>>>>> d0d9d11803c9e780d36c487d791786e625b91dc2
         if sn is not None:
             self.config.enable_device(sn)
             self.profile = self.pipeline.start(self.config)
@@ -179,6 +182,7 @@ class SelfClbRealsense(Realsense):
                                              self.color_intrinsics.ppy
         self.K = K
         self.dist = np.zeros(5)
+<<<<<<< HEAD
 
 
 class SelfClbRealsense_K_D(SelfClbRealsense):
@@ -202,3 +206,5 @@ class SelfClbRealsense_K_D(SelfClbRealsense):
             flag = flag | (d_img < self.depth_scale)
         depth_image[flag] = 0
         return color_image, depth_image, self.K, self.depth_scale, timestamp
+=======
+>>>>>>> d0d9d11803c9e780d36c487d791786e625b91dc2
