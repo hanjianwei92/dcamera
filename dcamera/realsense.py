@@ -26,11 +26,6 @@ class Realsense(DCamera):
         self.fps = fps
         # Start streaming
         self.config = rs.config()
-<<<<<<< HEAD
-        self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, fps)
-        self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, fps)
-=======
->>>>>>> d0d9d11803c9e780d36c487d791786e625b91dc2
         if sn is not None:
             self.config.enable_device(sn)
             self.profile = self.pipeline.start(self.config)
@@ -182,29 +177,3 @@ class SelfClbRealsense(Realsense):
                                              self.color_intrinsics.ppy
         self.K = K
         self.dist = np.zeros(5)
-<<<<<<< HEAD
-
-
-class SelfClbRealsense_K_D(SelfClbRealsense):
-    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False):
-        super().__init__(fps=fps, flip_nums=flip_nums, sn=sn, l515=l515)
-
-    def get_frame(self):
-        color_images = []
-        depth_images = []
-        timestamps = []
-        for flip in range(self.flip_nums):
-            color_image, depth_image, timestamp = self.get_one_frame()
-            color_images.append(color_image)
-            depth_images.append(depth_image)
-            timestamps.append(timestamp)
-        color_image = np.mean(np.array(color_images), axis=0).astype(np.uint8)
-        depth_image = np.mean(np.array(depth_images), axis=0)
-        timestamp = np.mean(np.array(timestamps), axis=0)
-        flag = np.zeros_like(depth_image).astype(np.bool)
-        for d_img in depth_images:
-            flag = flag | (d_img < self.depth_scale)
-        depth_image[flag] = 0
-        return color_image, depth_image, self.K, self.depth_scale, timestamp
-=======
->>>>>>> d0d9d11803c9e780d36c487d791786e625b91dc2
