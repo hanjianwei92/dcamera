@@ -26,8 +26,9 @@ class Realsense(DCamera):
         self.fps = fps
         # Start streaming
         self.config = rs.config()
-        self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, fps)
-        self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, fps)
+        if l515 is False:
+            self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, fps)
+            self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, fps)
 
         if sn is not None:
             self.config.enable_device(sn)
