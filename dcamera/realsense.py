@@ -14,12 +14,12 @@ ctx = rs.context()
 devs = ctx.query_devices() # devs是device_list类
 device_num = devs.size()
 devs_dict = {dev.get_info(rs.camera_info.serial_number): dev for dev in devs}
-print("exiting devices", devs_dict)
 
 
 class Realsense(DCamera):
     def __init__(self, fps=30, flip_nums=1, sn=None, l515=False):
         super(Realsense, self).__init__(flip_nums=flip_nums)
+        print("exiting devices", devs_dict)
         # Create a pipeline
         self.pipeline = rs.pipeline()
         # Configure depth and color streams
