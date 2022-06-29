@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from ZmqClient import ZmqClient
+from .ZmqClient import ZmqClient
 import sys
 import cv2
 import numpy as np
