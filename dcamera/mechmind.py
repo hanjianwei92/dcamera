@@ -9,20 +9,20 @@ import time
 
 
 class Mechmind(DCamera):
-    def __init__(self, flip_nums=1, camera_ip="192.168.3.226"):
+    def __init__(self, flip_nums=1, camera_ip="192.168.1.101"):
         super(Mechmind, self).__init__(flip_nums=flip_nums)
-        camera = CameraClient()
-        if not camera.connect(camera_ip):
+        self.camera = CameraClient()
+        if not self.camera.connect(camera_ip):
             print('Connect falied!')
-        fx, fy, u, v = camera.getCameraIntri()
+        fx, fy, u, v = self.camera.getCameraIntri()
         self.K = np.array([[fx, 0, u],
                            [0, fy, v],
                            [0, 0, 1]])
         self.depth_scale = 1
 
     def get_one_frame(self):
-        depth = camera.captureDepthImg()
-        color = camera.captureColorImg()
+        depth = self.camera.captureDepthImg()
+        color = self.camera.captureColorImg()
         timestamp = time.time()
         return color, depth * self.depth_scale, timestamp
 
@@ -42,4 +42,5 @@ class Mechmind(DCamera):
         for d_img in depth_images:
             flag = flag | (d_img < self.depth_scale)
         depth_image[flag] = 0
-        return color_image, depth_image, self.K, self.depth_scale, timestamp
+        depth_image /= 1000.0
+        return color_image[:, :, ::-1], depth_image, self.K, self.depth_scale, timestamp
