@@ -15,6 +15,7 @@ class DCamera:
         pass
 
     def get_frame(self):
-        return None, None, time.time() # rgb image, depth image, timestamp
+        return None, None, time.time()  # rgb image, depth image, timestamp
 
-
+    def get_one_frame(self):
+        return None, None, None

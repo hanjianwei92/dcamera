@@ -24,14 +24,14 @@ class Mechmind(DCamera):
         depth = self.camera.captureDepthImg()
         color = self.camera.captureColorImg()
         timestamp = time.time()
-        return color, depth * self.depth_scale, timestamp
+        return color, depth * self.depth_scale, self.K, self.depth_scale, timestamp
 
     def get_frame(self):
         color_images = []
         depth_images = []
         timestamps = []
         for flip in range(self.flip_nums):
-            color_image, depth_image, timestamp = self.get_one_frame()
+            color_image, depth_image, k_, depth_scale_, timestamp = self.get_one_frame()
             color_images.append(color_image)
             depth_images.append(depth_image)
             timestamps.append(timestamp)

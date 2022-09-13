@@ -147,7 +147,7 @@ class CameraClient(ZmqClient):
         if len(imageDepth) == 0:
             print("Client depth image is empty!")
             return {}
-        print("Depth image captured!")
+        # print("Depth image captured!")
         return read32FC1Mat(imageDepth, scale)
 
     def captureColorImg(self):
@@ -159,7 +159,7 @@ class CameraClient(ZmqClient):
         if len(imageRGB) == 0:
             print("Client color image is empty!")
             return {}
-        print("Color image captured!")
+        # print("Color image captured!")
         return cv2.imdecode(asMat(imageRGB), cv2.IMREAD_COLOR)
 
     def getCameraIntri(self):

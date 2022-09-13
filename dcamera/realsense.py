@@ -192,7 +192,7 @@ class SelfClbRealsense_K_D(SelfClbRealsense):
         depth_images = []
         timestamps = []
         for flip in range(self.flip_nums):
-            color_image, depth_image, timestamp = self.get_one_frame()
+            color_image, depth_image, timestamp = super().get_one_frame()
             color_images.append(color_image)
             depth_images.append(depth_image)
             timestamps.append(timestamp)
@@ -203,4 +203,8 @@ class SelfClbRealsense_K_D(SelfClbRealsense):
         for d_img in depth_images:
             flag = flag | (d_img < self.depth_scale)
         depth_image[flag] = 0
+        return color_image, depth_image, self.K, self.depth_scale, timestamp
+
+    def get_one_frame(self):
+        color_image, depth_image, timestamp = super().get_one_frame()
         return color_image, depth_image, self.K, self.depth_scale, timestamp
