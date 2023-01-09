@@ -9,7 +9,7 @@ import time
 
 
 class Mechmind(DCamera):
-    def __init__(self, flip_nums=1, camera_ip="192.168.1.101"):
+    def __init__(self, flip_nums=1, camera_ip="192.168.5.101"):
         super(Mechmind, self).__init__(flip_nums=flip_nums)
         self.camera = CameraClient()
         if not self.camera.connect(camera_ip):
