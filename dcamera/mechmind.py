@@ -24,7 +24,8 @@ class Mechmind(DCamera):
         depth = self.camera.captureDepthImg()
         color = self.camera.captureColorImg()
         timestamp = time.time()
-        return color, depth * self.depth_scale, self.K, self.depth_scale, timestamp
+        depth /= 1000.0
+        return color[:, :, ::-1], depth * self.depth_scale, self.K, self.depth_scale, timestamp
 
     def get_frame(self):
         color_images = []
@@ -42,5 +43,4 @@ class Mechmind(DCamera):
         for d_img in depth_images:
             flag = flag | (d_img < self.depth_scale)
         depth_image[flag] = 0
-        depth_image /= 1000.0
-        return color_image[:, :, ::-1], depth_image, self.K, self.depth_scale, timestamp
+        return color_image, depth_image, self.K, self.depth_scale, timestamp
