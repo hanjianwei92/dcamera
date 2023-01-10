@@ -39,8 +39,4 @@ class Mechmind(DCamera):
         color_image = np.mean(np.array(color_images), axis=0).astype(np.uint8)
         depth_image = np.mean(np.array(depth_images), axis=0)
         timestamp = np.mean(np.array(timestamps), axis=0)
-        flag = np.zeros_like(depth_image).astype(np.bool)
-        for d_img in depth_images:
-            flag = flag | (d_img < self.depth_scale)
-        depth_image[flag] = 0
         return color_image, depth_image, self.K, self.depth_scale, timestamp
