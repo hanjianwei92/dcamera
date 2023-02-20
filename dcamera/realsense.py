@@ -17,8 +17,8 @@ devs_dict = {dev.get_info(rs.camera_info.serial_number): dev for dev in devs}
 
 
 class Realsense(DCamera):
-    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False):
-        super(Realsense, self).__init__(flip_nums=flip_nums)
+    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False, moveit2 =False):
+        super(Realsense, self).__init__(flip_nums=flip_nums, moveit2=moveit2)
         print("exiting devices", devs_dict)
         # Create a pipeline
         self.pipeline = rs.pipeline()
@@ -184,8 +184,16 @@ class SelfClbRealsense(Realsense):
 
 
 class SelfClbRealsense_K_D(SelfClbRealsense):
-    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False):
-        super().__init__(fps=fps, flip_nums=flip_nums, sn=sn, l515=l515)
+    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False, moveit2 = False):
+        super().__init__(fps=fps, flip_nums=flip_nums, sn=sn, l515=l515, moveit2 = moveit2)
+        
+        self.moveit2_queue = None
+        self.robot_running_queue = None
+        if moveit2 is True:
+            from moveit2camera import Moveit2PCD
+            moveit2camera = Moveit2PCD(self.K)
+            self.moveit2_queue = moveit2camera.camera_queue
+            self.robot_running_queue = moveit2camera.robot_running_queue
 
     def get_frame(self):
         color_images = []
@@ -207,4 +215,6 @@ class SelfClbRealsense_K_D(SelfClbRealsense):
 
     def get_one_frame(self):
         color_image, depth_image, timestamp = super().get_one_frame()
+        if self.moveit2_queue is not None:
+            self.moveit2_queue.put((color_image, depth_image))
         return color_image, depth_image, self.K, self.depth_scale, timestamp

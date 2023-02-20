@@ -3,10 +3,11 @@ import time
 
 
 class DCamera:
-    def __init__(self, flip_nums=1):
+    def __init__(self, flip_nums=1, moveit2=False):
         self.K = np.eye(3)
         self.depth_scale = 1
         self.flip_nums = flip_nums
+        self.moveit2 = moveit2
 
     def open(self):
         pass
