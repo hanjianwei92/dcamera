@@ -33,11 +33,7 @@ class Moveit2PCD(multiprocessing.Process):
         
         while not clear_octomap_client.wait_for_service(timeout_sec=1.0):
             node.get_logger().info('service not available, waiting again...')
-   
-        client = node.create_client(SetBool, 'robot_running')
-        while not client.wait_for_service(timeout_sec=1.0):
-            node.get_logger().info('service not available, waiting again...')
-            
+
         # Use a MultiThreadedExecutor to enable processing goals concurrently
         executor = MultiThreadedExecutor()
         executor.add_node(node)
