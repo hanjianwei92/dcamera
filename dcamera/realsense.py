@@ -184,9 +184,9 @@ class SelfClbRealsense(Realsense):
 
 
 class SelfClbRealsense_K_D(SelfClbRealsense):
-    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False, moveit2 = False):
-        super().__init__(fps=fps, flip_nums=flip_nums, sn=sn, l515=l515, moveit2 = moveit2)
-        
+    def __init__(self, fps=30, flip_nums=1, sn=None, l515=False, moveit2=False):
+        super().__init__(fps=fps, flip_nums=flip_nums, sn=sn, l515=l515)
+
         self.moveit2_queue = None
         self.robot_running_queue = None
         if moveit2 is True:
