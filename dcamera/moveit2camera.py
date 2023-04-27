@@ -19,8 +19,8 @@ from dcamera import Mechmind
 class Moveit2PCD(multiprocessing.Process):
     def __init__(self, camera_K):
         super().__init__()
-        self.camera_queue = multiprocessing.Manager().Queue(10)
-        self.robot_running_queue = multiprocessing.Manager().Queue(1)
+        self.camera_queue = multiprocessing.Queue(10)
+        self.robot_running_queue = multiprocessing.Queue(1)
         self.k_inv = np.linalg.inv(camera_K)
         self.start()
              
