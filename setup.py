@@ -9,6 +9,7 @@ setup(
     url="10.0.8.172",
     description="dcamera interface (realsense mehmind)",
     packages=find_packages(exclude=("configs", "tests", "data", "scripts", "visualization")),
+    package_data={'': ['*']},
     data_files=[('dcamera/realsense_advance_mode_jsons',
                  ['dcamera/realsense_advance_mode_jsons/HighResHighAccuracyPreset.json',
                   'dcamera/realsense_advance_mode_jsons/HighResHighAccuracyPreset.json'])]
