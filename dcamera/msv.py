@@ -109,7 +109,7 @@ class MVSCamera:
 
             init_flag = False
 
-    def get_one_frame(self):
+    def get_one_frame(self, scaled_size=1):
         pData = self.data_buf
         nDataSize = self.nPayloadSize
         stFrameInfo = MV_FRAME_OUT_INFO_EX()
@@ -119,10 +119,9 @@ class MVSCamera:
             # print("get one frame: Width[%d], Height[%d], nFrameNum[%d]" % (
             #     stFrameInfo.nWidth, stFrameInfo.nHeight, stFrameInfo.nFrameNum))
             temp = np.array(pData)  # 将c_ubyte_Array转化成ndarray得到（3686400，）
-            # temp = temp.reshape((5472, 3648, 1))# 根据自己分辨率进行转化
-            img = temp.reshape((3648, 5472, 1))
+            img = temp.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth, 1))  # 根据自己分辨率进行转化
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            img = cv2.resize(img, (img.shape[1] // 2, img.shape[0] // 2))
+            img = cv2.resize(img, (int(img.shape[1] * scaled_size), int(img.shape[0] * scaled_size)))
             return img
         else:
             print("no data[0x%x]" % ret)
@@ -157,7 +156,6 @@ if __name__ == "__main__":
     mvs_camera = MVSCamera()
     while True:
         img = mvs_camera.get_one_frame()
-        img = cv2.resize(img, (5472 // 4, 3648 // 4))
         cv2.imshow('ca', img)
         key = cv2.waitKey(1)
         if key == 27:
