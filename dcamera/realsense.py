@@ -21,13 +21,13 @@ class Realsense(DCamera):
         super(Realsense, self).__init__(flip_nums=flip_nums, moveit2=moveit2)
         print("exiting devices", devs_dict)
         # Create a pipeline
-        self.pipeline = rs.pipeline()
+        self.pipeline = rs.pipeline(ctx)
         # Configure depth and color streams
         self.fps = fps
         # Start streaming
         self.config = rs.config()
         if l515 is False:
-            self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, fps)
+            self.config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, fps)
             self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, fps)
 
         if sn is not None:
@@ -218,3 +218,16 @@ class SelfClbRealsense_K_D(SelfClbRealsense):
         if self.moveit2_queue is not None:
             self.moveit2_queue.put((color_image, depth_image))
         return color_image, depth_image, self.K, self.depth_scale, timestamp
+
+
+if __name__ == "__main__":
+    # realsense = SelfClbRealsense(flip_nums=1)
+    realsense = SelfClbRealsense_K_D(flip_nums=1)
+    while True:
+        t01 = time.time()
+        color_image, depth_image, K, depth_scale, timestamp = realsense.get_frame()
+        t02 = time.time()
+        cv2.putText(color_image, "FPS: " + str(1 / (t02 - t01)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.imshow("color_image", color_image)
+        cv2.imshow("depth_image", depth_image)
+        cv2.waitKey(1)
