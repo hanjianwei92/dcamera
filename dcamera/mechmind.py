@@ -9,8 +9,8 @@ import time
 
 
 class Mechmind(DCamera):
-    def __init__(self, flip_nums=1, camera_ip="192.168.5.101", moveit2=False):
-        super(Mechmind, self).__init__(flip_nums=flip_nums, moveit2 = moveit2)
+    def __init__(self, flip_nums=1, camera_ip="192.168.10.43", moveit2=False):
+        super(Mechmind, self).__init__(flip_nums=flip_nums, moveit2=moveit2)
         self.camera = CameraClient()
         if not self.camera.connect(camera_ip):
             print('Connect falied!')
@@ -19,21 +19,21 @@ class Mechmind(DCamera):
                            [0, fy, v],
                            [0, 0, 1]])
         self.depth_scale = 1
-        
+
         self.moveit2_queue = None
         self.robot_running_queue = None
         if moveit2 is True:
             from .moveit2camera import Moveit2PCD
             moveit2camera = Moveit2PCD(self.K)
             self.moveit2_queue = moveit2camera.camera_queue
-            self.robot_running_queue =  moveit2camera.robot_running_queue
+            self.robot_running_queue = moveit2camera.robot_running_queue
 
     def get_one_frame(self):
         depth = self.camera.captureDepthImg()
         color = self.camera.captureColorImg()
         timestamp = time.time()
         depth /= 1000.0
-        
+
         if self.moveit2_queue is not None:
             self.moveit2_queue.put((color[:, :, ::-1], depth * self.depth_scale))
         return color[:, :, ::-1], depth * self.depth_scale, self.K, self.depth_scale, timestamp

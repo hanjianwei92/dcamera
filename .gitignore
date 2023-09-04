@@ -2,3 +2,4 @@
 build/
 dcamera.egg-info
 dist/
+**/__pycache__
