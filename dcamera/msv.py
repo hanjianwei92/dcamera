@@ -6,9 +6,9 @@ from pathlib import Path
 import platform
 
 if platform.system() == 'Windows':
-    from msv_camera.windows.MvCameraControl_class import *
+    from .msv_camera.windows.MvCameraControl_class import *
 else:
-    from msv_camera.linux.MvCameraControl_class import *
+    from .msv_camera.linux.MvCameraControl_class import *
 
 
 class MVSCamera:
