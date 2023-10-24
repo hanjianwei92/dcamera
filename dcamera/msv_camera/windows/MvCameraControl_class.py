@@ -1,15 +1,11 @@
 # -- coding: utf-8 --
 
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent))
-
 from ctypes import *
 
-from PixelType_header import *
-from CameraParams_const import *
-from CameraParams_header import *
-from MvErrorDefine_const import *
+from .PixelType_header import *
+from .CameraParams_const import *
+from .CameraParams_header import *
+from .MvErrorDefine_const import *
 
 MvCamCtrldll = WinDLL("C:\Program Files (x86)\Common Files\MVS\Runtime\Win64_x64\MvCameraControl.dll")
 
@@ -189,7 +185,7 @@ class MvCamera():
         # C原型:int MV_CC_GetImageBuffer(IN void* handle, OUT MV_FRAME_OUT* pstFrame, IN unsigned int nMsec);
         return MvCamCtrldll.MV_CC_GetImageBuffer(self.handle, byref(stFrame), nMsec)
 
-    # ch:使用内部缓存获取一帧图片（与MV_CC_Display不能同时使用） | en:Get a frame of an image using an internal cache(Cannot be used together with the interface of MV_CC_Display)
+    # ch:# 释放图像缓存(此接口用于释放不再使用的图像缓存，与MV_CC_GetImageBuffer配套使用)
     def MV_CC_FreeImageBuffer(self, stFrame):
         MvCamCtrldll.MV_CC_FreeImageBuffer.argtype = (c_void_p, c_void_p)
         MvCamCtrldll.MV_CC_FreeImageBuffer.restype = c_uint

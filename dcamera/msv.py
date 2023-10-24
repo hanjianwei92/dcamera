@@ -2,11 +2,17 @@
 import cv2
 import numpy as np
 import json
-from .msv_camera.MvCameraControl_class import *
+from pathlib import Path
+import platform
+
+if platform.system() == 'Windows':
+    from msv_camera.windows.MvCameraControl_class import *
+else:
+    from msv_camera.linux.MvCameraControl_class import *
 
 
 class MVSCamera:
-    def __init__(self):
+    def __init__(self, ip='192.168.10.44'):
         try:
             with open(str(Path(__file__).parent/'msv_camera/camera_intrinsic.json'), 'r') as f:
                 camera_param_dict = json.load(f)
@@ -18,78 +24,57 @@ class MVSCamera:
             self.camera_k = None
             self.camera_d = None
 
-        deviceList = MV_CC_DEVICE_INFO_LIST()
-        tlayerType = MV_GIGE_DEVICE | MV_USB_DEVICE
-
         init_flag = True
         while init_flag:
-            # ch:枚举设备 | en:Enum device, 如果没发现设备就报错
-            ret = MvCamera.MV_CC_EnumDevices(tlayerType, deviceList)
-            if ret != 0:
-                print("enum devices fail! ret[0x%x]" % ret)
-                continue
+            # ch:枚举设备
+            stDevInfo = MV_CC_DEVICE_INFO()
+            stGigEDev = MV_GIGE_DEVICE_INFO()
 
-            if deviceList.nDeviceNum == 0:
-                print("find no device!")
-                continue
+            deviceIp = ip
+            import socket
+            netIp = socket.gethostbyname(socket.gethostname())
 
-            print("Find %d devices!" % deviceList.nDeviceNum)
+            deviceIpList = deviceIp.split('.')
+            stGigEDev.nCurrentIp = (int(deviceIpList[0]) << 24) | (int(deviceIpList[1]) << 16) | (
+                        int(deviceIpList[2]) << 8) | int(deviceIpList[3])
 
-            # 意义不明的初始化，最好别删除
-            for i in range(0, deviceList.nDeviceNum):
-                mvcc_dev_info = cast(deviceList.pDeviceInfo[i], POINTER(MV_CC_DEVICE_INFO)).contents
-                if mvcc_dev_info.nTLayerType == MV_GIGE_DEVICE:
-                    print("\ngige device: [%d]" % i)
-                    strModeName = ""
-                    for per in mvcc_dev_info.SpecialInfo.stGigEInfo.chModelName:
-                        if per == 0:
-                            break
+            netIpList = netIp.split('.')
+            stGigEDev.nNetExport = (int(netIpList[0]) << 24) | (int(netIpList[1]) << 16) | (
+                        int(netIpList[2]) << 8) | int(netIpList[3])
 
-                        strModeName = strModeName + chr(per)
-                    print("device model name: %s" % strModeName)
-
-                    nip1 = ((mvcc_dev_info.SpecialInfo.stGigEInfo.nCurrentIp & 0xff000000) >> 24)
-                    nip2 = ((mvcc_dev_info.SpecialInfo.stGigEInfo.nCurrentIp & 0x00ff0000) >> 16)
-                    nip3 = ((mvcc_dev_info.SpecialInfo.stGigEInfo.nCurrentIp & 0x0000ff00) >> 8)
-                    nip4 = (mvcc_dev_info.SpecialInfo.stGigEInfo.nCurrentIp & 0x000000ff)
-                    print("current ip: %d.%d.%d.%d\n" % (nip1, nip2, nip3, nip4))
-                elif mvcc_dev_info.nTLayerType == MV_USB_DEVICE:
-                    print("\nu3v device: [%d]" % i)
-                    strModeName = ""
-                    for per in mvcc_dev_info.SpecialInfo.stUsb3VInfo.chModelName:
-                        if per == 0:
-                            break
-                        strModeName = strModeName + chr(per)
-                    print("device model name: %s" % strModeName)
-
-                    strSerialNumber = ""
-                    for per in mvcc_dev_info.SpecialInfo.stUsb3VInfo.chSerialNumber:
-                        if per == 0:
-                            break
-                        strSerialNumber = strSerialNumber + chr(per)
-                    print("user serial number: %s" % strSerialNumber)
-
-            # 如果有多个设备，可以按照序号改变nConnectionNum来控制链接哪个，单个设备直接写0即可
-            nConnectionNum = 0
-            if int(nConnectionNum) >= deviceList.nDeviceNum:
-                print("intput error!")
-                continue
+            stDevInfo.nTLayerType = MV_GIGE_DEVICE
+            stDevInfo.SpecialInfo.stGigEInfo = stGigEDev
 
             # ch:创建相机实例
             self.cam = MvCamera()
 
-            # ch:选择设备并创建句柄 | en:Select device and create handle
-            stDeviceList = cast(deviceList.pDeviceInfo[int(nConnectionNum)], POINTER(MV_CC_DEVICE_INFO)).contents
-            ret = self.cam.MV_CC_CreateHandle(stDeviceList)
+            # ch:选择设备并创建句柄
+            ret = self.cam.MV_CC_CreateHandle(stDevInfo)
             if ret != 0:
                 print("create handle fail! ret[0x%x]" % ret)
-                continue
+                sys.exit()
 
             # 打开该设备
             ret = self.cam.MV_CC_OpenDevice(MV_ACCESS_Exclusive, 0)
             if ret != 0:
                 print("open device fail! ret[0x%x]" % ret)
                 continue
+
+            # ch:探测网络最佳包大小(只对GigE相机有效)
+            if stDevInfo.nTLayerType == MV_GIGE_DEVICE:
+                nPacketSize = self.cam.MV_CC_GetOptimalPacketSize()
+                if int(nPacketSize) > 0:
+                    ret = self.cam.MV_CC_SetIntValue("GevSCPSPacketSize", nPacketSize)
+                    if ret != 0:
+                        print("Warning: Set Packet Size fail! ret[0x%x]" % ret)
+                else:
+                    print("Warning: Get Packet Size fail! ret[0x%x]" % nPacketSize)
+
+            # ch:设置触发模式为off
+            ret = self.cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
+            if ret != 0:
+                print("set trigger mode fail! ret[0x%x]" % ret)
+                sys.exit()
 
             # 获取该设备关于图像的信息，nPayloadSize 和 data_buf 是关键变量
             stParam = MVCC_INTVALUE()
